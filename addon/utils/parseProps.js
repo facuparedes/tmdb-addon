@@ -29,8 +29,9 @@ function parseWriter(credits) {
 }
 
 function parseSlug(type, title, imdb_id) {
-  return `${type}/${title.toLowerCase().replace(/ /g, "-")}-${imdb_id ? imdb_id.replace("tt", "") : ""
-    }`;
+  return `${type}/${title.toLowerCase().replace(/ /g, "-")}-${
+    imdb_id ? imdb_id.replace("tt", "") : ""
+  }`;
 }
 
 function parseTrailers(videos) {
@@ -136,7 +137,7 @@ function parseRunTime(runtime) {
   if (runtime === 0 || !runtime) {
     return "";
   }
-  
+
   const hours = Math.floor(runtime / 60);
   const minutes = runtime % 60;
 
@@ -152,7 +153,7 @@ function parseCreatedBy(created_by) {
 }
 
 function parseConfig(catalogChoices) {
-  let config = {}
+  let config = {};
   try {
     config = JSON.parse(catalogChoices);
   } catch (e) {
@@ -164,39 +165,48 @@ function parseConfig(catalogChoices) {
 }
 
 async function parsePoster(type, id, poster, language, rpdbkey) {
-  const tmdbImage = `https://image.tmdb.org/t/p/w500${poster}`
+  const tmdbImage = `https://image.tmdb.org/t/p/w500${poster}`;
   if (rpdbkey) {
-    const rpdbImage = getRpdbPoster(type, id, language, rpdbkey)
-    return await checkIfExists(rpdbImage) ? rpdbImage : tmdbImage;
+    const rpdbImage = getRpdbPoster(type, id, language, rpdbkey);
+    return (await checkIfExists(rpdbImage)) ? rpdbImage : tmdbImage;
   }
   return tmdbImage;
 }
 
 function parseMedia(el, type, genreList = []) {
-  const genres = Array.isArray(el.genre_ids) 
-    ? el.genre_ids.map(genre => genreList.find((x) => x.id === genre)?.name || 'Unknown')
+  const genres = Array.isArray(el.genre_ids)
+    ? el.genre_ids.map(
+        (genre) => genreList.find((x) => x.id === genre)?.name || "Unknown"
+      )
     : [];
 
   return {
     id: `tmdb:${el.id}`,
-    name: type === 'movie' ? el.title : el.name,
+    name: type === "movie" ? el.title : el.name,
     genre: genres,
     poster: `https://image.tmdb.org/t/p/w500${el.poster_path}`,
     background: `https://image.tmdb.org/t/p/original${el.backdrop_path}`,
     posterShape: "regular",
-    imdbRating: el.vote_average ? el.vote_average.toFixed(1) : 'N/A',
-    year: type === 'movie' ? (el.release_date ? el.release_date.substr(0, 4) : "") : (el.first_air_date ? el.first_air_date.substr(0, 4) : ""),
-    type: type === 'movie' ? type : 'series',
+    imdbRating: el.vote_average ? el.vote_average.toFixed(1) : "N/A",
+    year:
+      type === "movie"
+        ? el.release_date
+          ? el.release_date.substr(0, 4)
+          : ""
+        : el.first_air_date
+        ? el.first_air_date.substr(0, 4)
+        : "",
+    type: type === "movie" ? type : "series",
     description: el.overview,
   };
 }
 function getRpdbPoster(type, id, language, rpdbkey) {
-  const tier = rpdbkey.split("-")[0]
-  const lang = language.split("-")[0]
+  const tier = rpdbkey.split("-")[0];
+  const lang = language.split("-")[0];
   if (tier === "t0" || tier === "t1" || lang === "en") {
-    return `https://api.ratingposterdb.com/${rpdbkey}/tmdb/poster-default/${type}-${id}.jpg?fallback=true`
+    return `https://api.ratingposterdb.com/${rpdbkey}/tmdb/poster-default/${type}-${id}.jpg?fallback=true`;
   } else {
-    return `https://api.ratingposterdb.com/${rpdbkey}/tmdb/poster-default/${type}-${id}.jpg?fallback=true&lang=${lang}`
+    return `https://api.ratingposterdb.com/${rpdbkey}/tmdb/poster-default/${type}-${id}.jpg?fallback=true&lang=${lang}`;
   }
 }
 
@@ -204,11 +214,11 @@ async function checkIfExists(rpdbImage) {
   return new Promise((resolve) => {
     urlExists(rpdbImage, (err, exists) => {
       if (exists) {
-        resolve(true)
+        resolve(true);
       } else {
         resolve(false);
       }
-    })
+    });
   });
 }
 
@@ -233,5 +243,5 @@ module.exports = {
   parsePoster,
   parseMedia,
   getRpdbPoster,
-  checkIfExists
+  checkIfExists,
 };
