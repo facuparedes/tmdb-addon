@@ -89,9 +89,9 @@ export default {
       {
         path: "{/:config}/manifest.json",
         handler: ({ config }) => {
-          if (!config) return createJsonResponse(getManifest());
+          if (!config) return createJsonResponse(getManifest(moviedb));
           const parsedConfig = parseConfig(config);
-          return createJsonResponse(getManifest(parsedConfig));
+          return createJsonResponse(getManifest(moviedb, parsedConfig));
         },
       },
       {

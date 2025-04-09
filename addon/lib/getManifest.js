@@ -125,7 +125,7 @@ function getOptionsForCatalog(
   }
 }
 
-async function getManifest(config) {
+async function getManifest(moviedb, config = {}) {
   const language = config.language || DEFAULT_LANGUAGE;
   const tmdbPrefix = config.tmdbPrefix === "true";
   const provideImdbId = config.provideImdbId === "true";
@@ -134,9 +134,9 @@ async function getManifest(config) {
   const translatedCatalogs = loadTranslations(language);
 
   const [genresMovie, genresSeries, languagesArray] = await Promise.all([
-    getGenreList(language, "movie"),
-    getGenreList(language, "series"),
-    getLanguages(),
+    getGenreList(moviedb, language, "movie"),
+    getGenreList(moviedb, language, "series"),
+    getLanguages(moviedb),
   ]);
 
   const years = generateArrayOfYears(20);
